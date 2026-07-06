@@ -36,19 +36,21 @@ import { z } from 'zod'
  */
 
 // TODO 1) createProjectSchema
-export const createProjectSchema = z.object({
-  name: z.string(), // TODO: Regeln ergänzen
+export const createProjectSchema = z.object({// TODO: Regeln ergänzen
+  name: z.string().min(1, 'Name ist erforderlich').max(100),
+  description: z.string().max(500).optional(), 
 })
 
 // TODO 2) createTaskSchema
 export const createTaskSchema = z.object({
-  title: z.string(), // TODO
-  projectId: z.string(), // TODO
+  title: z.string().min(1).max(200),
+  description: z.string().max(1000).optional(),  // TODO
+  projectId: z.string().uuid(), // TODO
 })
 
 // TODO 3) updateSettingSchema
 export const updateSettingSchema = z.object({
-  key: z.string(), // TODO
+  key: z.string().min(1), // TODO
   value: z.string(),
 })
 

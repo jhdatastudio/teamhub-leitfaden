@@ -22,6 +22,9 @@ import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 export const settings = pgTable('settings', {
   // TODO: Spalten definieren
   key: text('key').primaryKey(),
+  value: text('value').notNull(),
+  description: text('description'),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow()
 })
 
 export type Setting = typeof settings.$inferSelect

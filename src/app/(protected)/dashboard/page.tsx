@@ -1,4 +1,9 @@
 import Link from 'next/link'
+//*1.6a*/
+import { db } from '@/db'
+import { projects, tasks } from '@/db/schema'
+import { count } from 'drizzle-orm'
+
 
 /**
  * ═══════════════════════════════════════════════════════════
@@ -29,9 +34,31 @@ import Link from 'next/link'
  *     und zeige sie unter den Statistik-Karten als Liste an.
  */
 
+//*1.6b*/
+async function getStats() {
+  const [projectCount] = await db.select({ value: count() }).from(projects)
+  const [taskCount] = await db.select({ value: count() }).from(tasks)
+  return {
+    projects: projectCount.value,
+    tasks: taskCount.value,
+  }
+}
+
+//*Bonus 1.B*/
+async function getRecentProjects() {
+  return db.query.projects.findMany({
+    orderBy: (p, { desc }) => [desc(p.createdAt)],
+    limit: 3,
+  })
+}
+
 export default async function DashboardPage() {
   // TODO b+c: echte Zahlen aus der Datenbank laden
-  const stats = { projects: 0, tasks: 0 }
+  //*1.6c*/
+const stats = await getStats()
+//*Bonus 1.B*/
+const recentProjects = await getRecentProjects()
+
 
   return (
     <div>
@@ -51,7 +78,18 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* BONUS 1.B: Hier die 3 neuesten Projekte anzeigen */}
+      {recentProjects.length > 0 && (
+  <div className="mb-8">
+    <h2 className="text-lg font-semibold text-gray-900 mb-3">Neueste Projekte</h2>
+    <ul className="space-y-2">
+      {recentProjects.map((project) => (
+        <li key={project.id} className="bg-white rounded-lg border p-3 text-sm">
+          {project.name}
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
 
       <div className="flex gap-3">
         <Link

@@ -1,5 +1,6 @@
 import CreateProjectForm from './_components/create-project-form'
 import ProjectList from './_components/project-list'
+import { db } from '@/db'
 
 /**
  * ═══════════════════════════════════════════════════════════
@@ -19,9 +20,17 @@ import ProjectList from './_components/project-list'
  *     where: ilike(projects.name, `%${q}%`)
  */
 
+/* 1.7*/ 
+async function getAllProjects() {
+  return db.query.projects.findMany({
+    orderBy: (p, { desc }) => [desc(p.createdAt)],
+  })
+}
+
+
 export default async function ProjectsPage() {
   // TODO a: Projekte aus der Datenbank laden
-  const allProjects: never[] = []
+  const allProjects = await getAllProjects()
 
   return (
     <div>
